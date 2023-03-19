@@ -2,4 +2,5 @@ site_name: My Notes
 nav:
   - C++:
     - 函数重载: overload.md
-theme: material
+theme: 
+  name: material
