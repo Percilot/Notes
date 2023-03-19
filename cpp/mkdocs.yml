@@ -1,6 +1,5 @@
-site_name: My Docs
-theme:
-  name: material
+site_name: My Notes
 nav:
   - C++:
     - 函数重载: overload.md
+theme: readthedocs
