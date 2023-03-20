@@ -360,35 +360,35 @@
                   
 
 
-<h1 id="_1">虚继承与虚基类</h1>
-<h2 id="_2">为什么需要虚继承？</h2>
+<h1 id="_1">虚继承与虚基类<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h2 id="_2">为什么需要虚继承？<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <p>由于C++中允许多继承，我们几乎必然会遇到菱形继承的问题：</p>
-<pre><code class="language-cpp">class Grandfather
-{
-    int m_a;   
-};
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Grandfather</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">m_a</span><span class="p">;</span><span class="w">   </span>
+<span class="p">};</span>
 
-class Father : public Grandfather
-{
-    int m_b;
-};
+<span class="k">class</span><span class="w"> </span><span class="nc">Father</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Grandfather</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">m_b</span><span class="p">;</span>
+<span class="p">};</span>
 
-class Mother : public Grandfather
-{
-    int m_c;
-};
+<span class="k">class</span><span class="w"> </span><span class="nc">Mother</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Grandfather</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">m_c</span><span class="p">;</span>
+<span class="p">};</span>
 
-class Son : public Father, public Mother
-{
-    int m_d;
-};
-</code></pre>
+<span class="k">class</span><span class="w"> </span><span class="nc">Son</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Father</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Mother</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">m_d</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div>
 <p>这种菱形继承会使得<code>Son</code>类实质上存储有两份<code>Grandfather</code>的数据，导致了浪费和歧义。</p>
 <p>歧义：例如我们访问 <code>Son.m_a</code>，我们无法确定这个<code>m_a</code>究竟是来自<code>Father</code>类还是<code>Mother</code>类。</p>
 <p>为了解决这个问题（其实就是给多继承打补丁），我们引入了虚继承。</p>
-<h2 id="_3">虚继承的使用</h2>
+<h2 id="_3">虚继承的使用<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
 <p>虚继承通过关键字<code>virtual</code>实现，此时派生类中只会保留一份间接基类的成员。</p>
-<p>所有声明为虚继承的类都会作出以下保证：它承诺共享它的基类（解决数据冗余），这一基类也因此得名虚基类。对于它的派生类，它将不再自己调用虚基类的构造函数，而是转交给<strong>最终的派生类</strong>进行唯一一次构造（解决命名冲突）。</p>
+<p>所有声明为虚继承的类都会作出以下保证：它承诺共享它的基类（解决数据冗余），这一基类也因此得名虚基类。对于它的派生类，它将不再自己调用虚基类的构造函数，而是转交给**最终的派生类**进行唯一一次构造（解决命名冲突）。</p>
 <p>需要注意的是，在最终的派生类进行构造时，编译器会先调用虚基类的构造函数，之后再调用直接基类的构造函数。</p>
 
 
