@@ -1,0 +1,690 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../virtualInheritance/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.14">
+    
+    
+      
+        <title>类的内存模型 - My Notes</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.113286f1.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.a0c5b2b5.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="My Notes" class="md-header__button md-logo" aria-label="My Notes" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Notes
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              类的内存模型
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="My Notes" class="md-nav__button md-logo" aria-label="My Notes" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    My Notes
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+          C++
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          C++
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../overload/" class="md-nav__link">
+        函数重载
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../virtualInheritance/" class="md-nav__link">
+        虚继承与虚基类
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          类的内存模型
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        类的内存模型
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    对象成员布局
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    复合中的内存布局
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    继承中的内存布局
+  </a>
+  
+    <nav class="md-nav" aria-label="继承中的内存布局">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    普通继承
+  </a>
+  
+    <nav class="md-nav" aria-label="普通继承">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    无虚函数的单继承
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    含虚函数的单继承
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    多重继承
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    多继承
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    虚继承
+  </a>
+  
+    <nav class="md-nav" aria-label="虚继承">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    无虚函数的单虚继承
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    含虚函数的单虚继承
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    菱形继承
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    对象成员布局
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    复合中的内存布局
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    继承中的内存布局
+  </a>
+  
+    <nav class="md-nav" aria-label="继承中的内存布局">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    普通继承
+  </a>
+  
+    <nav class="md-nav" aria-label="普通继承">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    无虚函数的单继承
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    含虚函数的单继承
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    多重继承
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    多继承
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    虚继承
+  </a>
+  
+    <nav class="md-nav" aria-label="虚继承">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    无虚函数的单虚继承
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    含虚函数的单虚继承
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    菱形继承
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="_1">类的内存模型</h1>
+<p>在这一部分我们将描述C++中类在内存中的布局。</p>
+<h2 id="_2">对象成员布局</h2>
+<p>C++对象成员可以分为两类：成员函数和成员属性。成员函数可以分为：构造函数、析构函数、运算符重载函数，虚成员函数，静态成员函数、普通成员函数、内联成员函数；成员属性可以分为：普通成员属性，静态成员属性。</p>
+<p>接下来我们对于各项属性进行分析：</p>
+<ol>
+<li>
+<p>成员函数：存放于整个程序的代码部分。这主要是由于成员函数与对象无关，仅与类相关。</p>
+</li>
+<li>
+<p>虚函数表指针：由于要实现运行时多态，每个对象需要维护虚函数表。</p>
+</li>
+<li>
+<p>每个对象都有一个指向虚表的指针，这个指针存放在对象起始地址处。</p>
+</li>
+<li>
+<p>由<strong>同一个类</strong>实例化的所有对象共用一个虚表</p>
+</li>
+<li>
+<p>虚函数表本体位于只读数据段</p>
+</li>
+<li>
+<p>静态成员属性：存放在静态存储区</p>
+</li>
+<li>
+<p>普通成员属性：存放在对象中，以字节对齐方式存放的。</p>
+</li>
+</ol>
+<p>字节对齐规则如下：</p>
+<ul>
+<li>将各数据成员内存对齐。 对齐模数是【该数据成员所占内存】与【<code>#pragma pack</code>指定的数值】中的较小者。数据成员所占内存应该是该模数的整数倍；另外，如果对齐模数为 N ，存放的起始位置就是 N 的整数倍；</li>
+<li>将结构体整体内存对齐。 对齐模数是【结构体内部最大的基本数据类型成员】、【<code>#pragma pack</code>指定的数值】长度中数值较小者。结构体所占内存以及起始位置应该是该模数的整数倍；</li>
+<li>结构体嵌套结构体时，对齐模数是【子结构体中数据类型最大值】 和 【<code>#pragma pack</code>指定的数值】 中的较小值。结构体成员所占内存以及起始位置应该是该模数的整数倍。</li>
+</ul>
+<h2 id="_3">复合中的内存布局</h2>
+<p>当类中包含其他的类时，这种情况比较简单，只需要类比内存对齐规则即可。我们首先需要将被包含的类内部成员变量按内存对齐规则排布后，再与其他成员按内存对齐规则排布。<strong>复合中存在两次内存对齐。</strong></p>
+<h2 id="_4">继承中的内存布局</h2>
+<h3 id="_5">普通继承</h3>
+<h4 id="_6">无虚函数的单继承</h4>
+<p>这一部分的内存操作与复合中相似而又不同。在继承时，子类直接将父类的成员变量排布在子类的成员变量之前，之后<strong>只使用一次内存对齐</strong>。</p>
+<h4 id="_7">含虚函数的单继承</h4>
+<p>需要指出的是，虚函数表位于父类的成员变量之前，此时内存空间布局如下：</p>
+<pre><code>虚函数表指针      父类成员变量      子类成员变量
+</code></pre>
+<p>根据子类的不同属性和操作，虚函数表又会产生变化：</p>
+<ol>
+<li>如果子类中没有自己的虚函数，那么只需要将父类的虚函数表复制一份即可。</li>
+<li>如果子类中有自己的虚函数，那么不仅需要复制父类的虚函数表，还需要在父类的虚函数表<strong>之后</strong>添加上自己的虚函数地址，构成一份新的虚函数表。</li>
+<li>如果子类覆写了父类的虚函数，那么就需要修改复制来的父类的虚函数表，将对应项修改为子类的函数地址。</li>
+</ol>
+<h4 id="_8">多重继承</h4>
+<p>上面我们分析了二重继承，与之类似的我们可以分析多重继承。</p>
+<p>多重继承的本质并没有什么变化，成员变量仍然按照父类到子类到孙类的顺序排布。同时由于虚函数表是可以继承的，所以仍然只存在一张虚函数表，只不过进行了多次如上文中所述的复制和修改过程。</p>
+<h4 id="_9">多继承</h4>
+<p>接下来我们考虑多继承的情况。这一部分的情况比较复杂，我们分情况讨论。</p>
+<ol>
+<li>最简单的情况则是两个父类中均不含虚函数，内存布局仅为按照声明顺序排布：</li>
+</ol>
+<p><code>第一个父类成员变量    第二个父类成员变量   子类成员变量</code></p>
+<ol>
+<li>当有且仅有一个父类中存在虚函数时，内存布局将必然按照如下的方式排布，而<strong>与声明顺序无关</strong>：</li>
+</ol>
+<p><code>虚函数表指针   有虚函数的父类成员变量 无虚函数的父类成员变量 子类成员变量</code></p>
+<ol>
+<li>当有多个父类存在虚函数时，内存布局将按照声明顺序排布，但需要注意的是，子类的虚函数将新增在第一个虚函数表中，而覆写可以发生在每一个虚函数表中。</li>
+</ol>
+<h3 id="_10">虚继承</h3>
+<p>在C++中，所有虚继承而来的派生类会生成一个隐藏的虚基类表指针，这个虚基类指针往往位于虚函数表指针之后（如果没有虚函数表指针那么就将位于内存最前端）。虚基类表与虚函数表类似，存在多个条目。虚基类表的第一、第二、第三……条目以此为本类、最左虚继承父类、次左虚继承父类……起始地址与虚基类表指针之间的偏移值。</p>
+<h4 id="_11">无虚函数的单虚继承</h4>
+<p>这一部分的内存操作普通继承恰好相反。在继承时，子类直接将父类的成员变量排布在子类的成员变量之<strong>后</strong>。</p>
+<h4 id="_12">含虚函数的单虚继承</h4>
+<ol>
+<li>若只有父类有虚函数，此时子类会继承父类的虚表，同时按照与普通继承相反的顺序放置成员变量：</li>
+</ol>
+<p><code>虚函数表指针       虚基类表指针      子类成员变量      父类成员变量</code></p>
+<ol>
+<li>若只有子类有虚函数，此时子类会新建一张虚表，内存布局如下：</li>
+</ol>
+<p><code>虚函数表指针       虚基类表指针      子类成员变量      父类成员变量</code></p>
+<ol>
+<li>若子类和父类均有虚函数，此时子类将会新建属于自己的虚函数表：</li>
+</ol>
+<p><code>子类虚函数表指针 虚基类表指针      子类成员变量
+   父类虚函数表指针 父类成员变量</code></p>
+<p>子类会将自己新增的虚函数填写进子类虚函数表指针指向的虚函数表，若覆写了父类的虚函数，则直接修改对应父类虚函数表中的对应项。</p>
+<h4 id="_13">菱形继承</h4>
+<p>我们以最经典的菱形继承结尾：</p>
+<pre><code class="language-cpp">class Grandfather {
+
+};
+
+class Father : virtual public Grandfather {
+
+};
+
+class Mother : virtual public Grandfather {
+
+};
+
+class Son : public Father, public Mother {
+
+};
+</code></pre>
+<ul>
+<li>对于<code>Son</code>类内存而言，基类出现的顺序是：<code>Father</code>（最左父类）、<code>Mother</code>（次左父类）、<code>Grandfather</code>（虚祖父类）。</li>
+<li><code>Son</code>类本身的数据位于<code>Grandfather</code>类之前。</li>
+<li>编译器并没有为<code>Son</code>类本身生成虚函数表，而是覆盖并拓展了最左父类<code>Father</code>的虚函数表。</li>
+<li>共同虚基类<code>Grandfather</code>的内容放到了派生类<code>Son</code>对象内存的最后。</li>
+</ul>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.2a6f1dda.min.js"></script>
+      
+    
+  </body>
+</html>
