@@ -1,9 +1,9 @@
 site_name: My Notes
 nav:
-  - C++:
-    - 函数重载: overload.md
-    - 虚继承与虚基类: virtualInheritance.md
-    - 类的内存模型: classInMemory.md
+- C++:
+  - 函数重载: overload.md
+  - 虚继承与虚基类: virtualInheritance.md
+  - 类的内存模型: classInMemory.md
 theme: 
   name: material
 markdown_extensions:
